@@ -4,12 +4,11 @@ import pandas as pd
 percep_data = pd.read_csv('perceptronData.txt', header = None, delim_whitespace = True)
 
 def normalize(col, mean=None, std=None):
-    if mean is None and std is None:
-        x = (col - np.mean(col)) / np.std(col)
-        return x
-    else:
-        x = (col - mean) / std
-        return x
+    return (
+        (col - np.mean(col)) / np.std(col)
+        if mean is None and std is None
+        else (col - mean) / std
+    )
 
 class Perceptron:
 
@@ -40,16 +39,16 @@ class Perceptron:
         i = 0
         while not no_errors:
             i+=1
-            print('iteration :'+str(i))
+            print(f'iteration :{i}')
             preds = x.dot(self.w)
 
             wrong = [i for i,x in enumerate(preds) if x < 0]
 
 
-            print('weights: ' + str(self.w))
-            print('n_wrong: ' +str(len(wrong)) +'\n')
+            print(f'weights: {str(self.w)}')
+            print(f'n_wrong: {len(wrong)}' + '\n')
             sum_x = []
-            if len(wrong) == 0:
+            if not wrong:
                 no_errors = True
             for col in x.columns:
                 wrongs = x.loc[wrong]
@@ -65,4 +64,4 @@ n_w = perceptron.w
 last, n_w = n_w[-1], n_w[:-1]
 n_w = n_w/last
 
-print('Final Normalized Weights: ' + str(n_w))
+print(f'Final Normalized Weights: {str(n_w)}')

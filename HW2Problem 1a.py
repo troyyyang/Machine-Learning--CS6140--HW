@@ -32,10 +32,7 @@ def mse(actual, pred):
     return np.mean(mean_error)
 
 def accuracy(actual, pred):
-    true = 0
-    for i in range(len(pred)):
-        if actual[i] == round(pred[i] + .1):
-            true +=1
+    true = sum(actual[i] == round(pred[i] + .1) for i in range(len(pred)))
     return true/len(pred)
 
 class RidgeRegression:
@@ -71,12 +68,11 @@ class RidgeRegression:
 
 def normalize(col, mean = None, std = None):
     
-    if mean is None and std is None:
-        x = (col- np.mean(col))/np.std(col)
-        return x
-    else:
-        x = (col - mean)/std
-        return x
+    return (
+        (col - np.mean(col)) / np.std(col)
+        if mean is None and std is None
+        else (col - mean) / std
+    )
 
 def normalize_test_data(test_x, model):
     x = test_x.copy()
@@ -93,8 +89,8 @@ house_test_y = list(house_test[house_test.columns[-1]].values)
 preds = ridge.predict(house_test_x)
 preds_train = ridge.predict(ridge.train_x)
 
-print('housing test error: '+ str(mse(house_test_y, preds)))
-print('housing train error: '+ str(mse(ridge.train_y, preds_train)))
+print(f'housing test error: {str(mse(house_test_y, preds))}')
+print(f'housing train error: {str(mse(ridge.train_y, preds_train))}')
 
 
 
@@ -123,8 +119,8 @@ for fold in folds:
     test_mses.append(mse(list(spam_test_y), list(preds)))
 
 print('spambase data')
-print('average test accuracy: ' + str(np.mean(test_accs)))
-print('average train accuracy: ' +str(np.mean(train_accs)))
+print(f'average test accuracy: {str(np.mean(test_accs))}')
+print(f'average train accuracy: {str(np.mean(train_accs))}')
 
 
 

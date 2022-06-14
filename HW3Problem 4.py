@@ -9,10 +9,7 @@ def normalize(col):
 
 
 def accuracy(actual, pred):
-    true = 0
-    for i in range(len(pred)):
-        if actual[i] == round(pred[i] + .1):
-            true +=1
+    true = sum(actual[i] == round(pred[i] + .1) for i in range(len(pred)))
     return true/len(pred)
 
 
@@ -43,7 +40,7 @@ model.compile(loss='mean_squared_error', optimizer=optimizer,  metrics=['accurac
 
 model.fit(x_train, y_train, epochs=1500, batch_size=100)
 preds = (np.argmax(model.predict(x_test), axis=1) + 1).tolist()
-print('Test Accuracy: ' + str(accuracy(y_label_test, preds)))
+print(f'Test Accuracy: {str(accuracy(y_label_test, preds))}')
 
 
 # tensorflow
@@ -69,7 +66,7 @@ init = tf.global_variables_initializer()
 sess = tf.Session()
 sess.run(init)
 
-for i in range(epochs):
+for _ in range(epochs):
     _, error, out = sess.run(fetches=[train, loss, output], feed_dict={X: x_train, y: y_train})
     print(error)
 
@@ -85,7 +82,7 @@ raw_pred = sigmoid(np.dot(sigmoid(np.dot(x_test, weights1)), weights2))
 preds = (np.argmax(raw_pred, axis=1) + 1).tolist()
 
 
-print('Test Accuracy: ' + str(accuracy(y_label_test, preds)))
+print(f'Test Accuracy: {str(accuracy(y_label_test, preds))}')
 
 
 

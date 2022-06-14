@@ -19,10 +19,7 @@ def confusion_matrix_vals(actual, pred):
     return fp,tp,fn,tn
 
 def accuracy(actual, pred):
-    true = 0
-    for i in range(len(pred)):
-        if actual[i] == round(pred[i] + .1):
-            true +=1
+    true = sum(actual[i] == round(pred[i] + .1) for i in range(len(pred)))
     return true/len(pred)
 
 def k_fold(data, num_folds):
@@ -72,29 +69,26 @@ class LogisticRegressionGD:
         ones = np.ones(shape=(len(y), 1))
         x = pd.DataFrame(np.concatenate((ones, x), 1))
 
-        for i in range(self.epochs):
+        for _ in range(self.epochs):
             preds = sigmoid(x.dot(self.w))
             errors = y - preds
-            thetas = []
-            for col in x.columns:
-                thetas.append(errors.dot(x[col].values))
+            thetas = [errors.dot(x[col].values) for col in x.columns]
             self.w = self.w + (self.lr * np.array(thetas))
 
 
     def predict(self, x):
-        return sigmoid(x.dot(self.w[1:len(self.w)]) + self.w[0])
+        return sigmoid(x.dot(self.w[1:]) + self.w[0])
 
 def sigmoid(x):
     return 1/(1+np.exp(-x))
 
 
 def normalize(col, mean=None, std=None):
-    if mean is None and std is None:
-        x = (col - np.mean(col)) / np.std(col)
-        return x
-    else:
-        x = (col - mean) / std
-        return x
+    return (
+        (col - np.mean(col)) / np.std(col)
+        if mean is None and std is None
+        else (col - mean) / std
+    )
 
 def normalize_test_data(test_x, model):
     x = test_x.copy()
@@ -127,7 +121,7 @@ neg = []
 
 for idx, fold in enumerate(folds):
 
-    print('fold: ' +str(idx+1))
+    print(f'fold: {str(idx+1)}')
     t = pd.concat([fold, spambase_data_txt])
 
     t = t.drop_duplicates(keep=False)
@@ -154,16 +148,16 @@ for idx, fold in enumerate(folds):
 
 
 
-print('fpr: ' + str(np.mean(fps) / (np.mean(fps) + (np.mean(tns))) ))
-print('tpr: ' + str(np.mean(tps) / (np.mean(tps) + (np.mean(fns))) ))
+print(f'fpr: {str(np.mean(fps) / (np.mean(fps) + (np.mean(tns))))}')
+print(f'tpr: {str(np.mean(tps) / (np.mean(tps) + (np.mean(fns))))}')
 
-print('average number of fps: ' + str(np.mean(fps)))
-print('average number of tps: ' + str(np.mean(tps)))
-print('average number of fns: ' + str(np.mean(fns)))
-print('average number of tns: ' + str(np.mean(tns)))
-print('average test accuracy' + str(np.mean(test_accs)))
-print('average train accuracy' +str(np.mean(train_accs)))
-print('average test mse' + str(np.mean(test_mses)))
+print(f'average number of fps: {str(np.mean(fps))}')
+print(f'average number of tps: {str(np.mean(tps))}')
+print(f'average number of fns: {str(np.mean(fns))}')
+print(f'average number of tns: {str(np.mean(tns))}')
+print(f'average test accuracy{str(np.mean(test_accs))}')
+print(f'average train accuracy{str(np.mean(train_accs))}')
+print(f'average test mse{str(np.mean(test_mses))}')
 
 
 
