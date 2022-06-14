@@ -19,7 +19,7 @@ class Autoencoder:
         self.output_two = sigmoid(np.dot(self.output_one, self.weights_two))
 
     def backpropagate(self):
-        print('Loss: ' + str(np.sum(np.sum(np.square(self.y - self.output_two)))))
+        print(f'Loss: {str(np.sum(np.sum(np.square(self.y - self.output_two))))}')
 
         gradient_two = np.dot(self.output_one.T,
                               (2*(self.y - self.output_two) * sigmoid_prime(self.output_two))
@@ -38,7 +38,7 @@ class Autoencoder:
 
     def fit(self):
         for i in range(self.epochs):
-            print('Iteration: ' + str(i))
+            print(f'Iteration: {str(i)}')
             self.feedforward()
             self.backpropagate()
             print(np.round(model.output_two))

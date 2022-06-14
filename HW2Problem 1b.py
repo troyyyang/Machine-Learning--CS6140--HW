@@ -25,10 +25,7 @@ def confusion_matrix_vals(actual, pred):
     return fp,tp,fn,tn
 
 def accuracy(actual, pred):
-    true = 0
-    for i in range(len(pred)):
-        if actual[i] == round(pred[i] +.1):
-            true +=1
+    true = sum(actual[i] == round(pred[i] +.1) for i in range(len(pred)))
     return true/len(pred)
 def k_fold(data, num_folds):
 
@@ -79,29 +76,25 @@ class LinearRegressionGD:
         ones = np.ones(shape=(len(y), 1))
         x = pd.DataFrame(np.concatenate((ones, x), 1))
 
-        for i in range(self.epochs):
+        for _ in range(self.epochs):
             preds = x.dot(self.w)
             errors = preds - y
-            thetas = []
-            #print(np.mean(np.square(errors)))
-            for col in x.columns:
-                thetas.append(errors.dot(x[col].values))
+            thetas = [errors.dot(x[col].values) for col in x.columns]
             #print(thetas)
             self.w = self.w - (self.lr * np.array(thetas))
 
 
 
     def predict(self, x):
-        return x.dot(self.w[1:len(self.w)]) + self.w[0]
+        return x.dot(self.w[1:]) + self.w[0]
 
 
 def normalize(col, mean=None, std=None):
-    if mean is None and std is None:
-        x = (col - np.mean(col)) / np.std(col)
-        return x
-    else:
-        x = (col - mean) / std
-        return x
+    return (
+        (col - np.mean(col)) / np.std(col)
+        if mean is None and std is None
+        else (col - mean) / std
+    )
 
 def normalize_test_data(test_x, model):
     x = test_x.copy()
@@ -117,8 +110,8 @@ house_test_x = normalize_test_data(house_test_x, lgd)
 house_test_y = list(house_test[house_test.columns[-1]].values)
 preds = lgd.predict(house_test_x)
 preds_train = lgd.predict(lgd.train_x)
-print('test error: '+ str(mse(house_test_y, preds)))
-print('train error: '+ str(mse(lgd.train_y, preds_train)))
+print(f'test error: {str(mse(house_test_y, preds))}')
+print(f'train error: {str(mse(lgd.train_y, preds_train))}')
 
 
 print('spambase data')
@@ -137,7 +130,7 @@ neg = []
 
 for idx, fold in enumerate(folds):
 
-    print('fold: ' +str(idx+1))
+    print(f'fold: {str(idx+1)}')
 
     t = pd.concat([fold, spambase_data_txt])
 
@@ -166,15 +159,15 @@ for idx, fold in enumerate(folds):
 
 
 
-print('average number of fps: ' + str(np.mean(fps)))
-print('average number of tps: ' + str(np.mean(tps)))
-print('average number of fns: ' + str(np.mean(fns)))
-print('average number of tns: ' + str(np.mean(tns)))
-print('fpr: ' + str(np.mean(fps) / (np.mean(fps) + (np.mean(tns))) ))
-print('tpr: ' + str(np.mean(tps) / (np.mean(tps) + (np.mean(fns))) ))
-print('average test accuracy: ' + str(np.mean(test_accs)))
-print('average train accuracy: ' +str(np.mean(train_accs)))
-print('average test mse: ' + str(np.mean(test_mses)))
+print(f'average number of fps: {str(np.mean(fps))}')
+print(f'average number of tps: {str(np.mean(tps))}')
+print(f'average number of fns: {str(np.mean(fns))}')
+print(f'average number of tns: {str(np.mean(tns))}')
+print(f'fpr: {str(np.mean(fps) / (np.mean(fps) + (np.mean(tns))))}')
+print(f'tpr: {str(np.mean(tps) / (np.mean(tps) + (np.mean(fns))))}')
+print(f'average test accuracy: {str(np.mean(test_accs))}')
+print(f'average train accuracy: {str(np.mean(train_accs))}')
+print(f'average test mse: {str(np.mean(test_mses))}')
 
 
 

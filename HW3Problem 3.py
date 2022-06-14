@@ -19,7 +19,7 @@ class NeuralNet:
         self.output_two = sigmoid(np.dot(self.output_one, self.weights_two))
 
     def backpropagate(self):
-        print('Loss: '+str(np.sum(np.sum(np.square(self.y - self.output_two)))))
+        print(f'Loss: {str(np.sum(np.sum(np.square(self.y - self.output_two))))}')
 
         gradient_two = np.dot(self.output_one.T,
                               (2*(self.y - self.output_two) * sigmoid_prime(self.output_two))
@@ -40,11 +40,11 @@ class NeuralNet:
 
     def fit(self):
         for i in range(self.epochs):
-            print('Iteration: '+str(i))
+            print(f'Iteration: {str(i)}')
             self.feedforward()
             self.backpropagate()
             preds = (np.argmax(model.output_two, axis=1) + 1).tolist()
-            print('Accuracy: ' + str(accuracy(y_label_train, preds)))
+            print(f'Accuracy: {str(accuracy(y_label_train, preds))}')
             if accuracy(y_label_train, preds) == 1:
                 break
 
@@ -62,10 +62,7 @@ def normalize(col):
 
 
 def accuracy(actual, pred):
-    true = 0
-    for i in range(len(pred)):
-        if actual[i] == round(pred[i] + .1):
-            true +=1
+    true = sum(actual[i] == round(pred[i] + .1) for i in range(len(pred)))
     return true/len(pred)
 
 
@@ -87,7 +84,7 @@ model.fit()
 model.x = x_test
 model.feedforward()
 preds = (np.argmax(model.output_two, axis=1) + 1).tolist()
-print('Test Accuracy: ' + str(accuracy(y_label_test, preds)))
+print(f'Test Accuracy: {str(accuracy(y_label_test, preds))}')
 
 
 

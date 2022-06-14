@@ -48,7 +48,7 @@ init = tf.global_variables_initializer()
 sess = tf.Session()
 sess.run(init)
 
-for i in range(epochs):
+for _ in range(epochs):
     _, error, out = sess.run(fetches=[train, loss, output], feed_dict={X: x_train, y: y_train})
     print(error)
     print(np.round(out))
